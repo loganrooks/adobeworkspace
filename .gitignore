@@ -49,3 +49,9 @@ logs/
 # Dependency management
 pip-log.txt
 pip-delete-this-directory.txt
+
+# Credentials and secrets
+adobe_credentials.json
+*.pem
+*.key
+*_secret*
