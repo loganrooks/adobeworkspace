@@ -1,0 +1,129 @@
+input:
+  recursive: true
+  supported_formats:
+    - pdf
+    - epub
+    - markdown
+    - txt
+
+extraction:
+  pdf:
+    adobe_api:
+      max_retries: 3
+      retry_delay: 5
+      page_limits:
+        scanned: 150
+        native: 400
+  epub:
+    preserve_structure: true
+  text:
+    detect_headers: true
+    parse_chapters: true
+
+content:
+  remove_elements:
+    - copyright
+    - index
+    - advertisements
+  footnotes:
+    include: true
+    position: end  # or inline
+
+output:
+  formats:
+    - markdown
+    - text
+    - semantic
+  directory: processed/
+  merge:
+    strategy: semantic  # or single
+    semantic_options:
+      max_words_per_file: 500000
+      preserve_chapters: true
+
+endpoints:
+  semantic_search:
+    enabled: false
+    chunking:
+      strategy: semantic_overlap
+      max_chunk_size: 2048
+      overlap_tokens: 200
+    content:
+      preserve_headings: true
+      include_metadata: true
+    analysis:
+      entities: true
+      keywords: true
+      concepts: true
+    metadata:
+      include_document_structure: true
+      store_embeddings: true
+      vector_model: "default"
+      
+  audiobook:
+    enabled: false
+    content:
+      exclude:
+        - footnotes
+        - tables
+        - figures
+      include_chapter_markers: true
+    text_normalization:
+      abbreviation_expansion: true
+      number_verbalization: true
+      pronunciation_guidance: true
+    chunking:
+      strategy: chapter_based
+      max_duration: "30m"
+    voice:
+      default: "neutral"
+      dialog_detection: true
+      
+  knowledge_base:
+    enabled: false
+    content:
+      extract_facts: true
+    analysis:
+      topics: true
+      relationships: true
+      entities: true
+    chunking:
+      strategy: concept_based
+      link_related_chunks: true
+
+operational:
+  error_handling:
+    max_retries: 3
+    retry_delay: 5
+    fallback_strategy: skip  # or halt
+    error_log: errors.log
+  
+  progress:
+    display: rich  # or simple
+    metrics_file: metrics.json
+    save_interval: 60  # seconds
+  
+  performance:
+    cache:
+      enabled: true
+      memory:
+        enabled: true
+        max_size: 500MB
+      disk:
+        enabled: true
+        location: .cache/
+        max_size: 10GB
+      content_addressable:
+        enabled: true
+        compression: true
+      differential:
+        enabled: true
+        compare_strategy: structure  # or content or metadata
+    parallel:
+      max_workers: 4
+      chunk_size: 10
+  
+  cli:
+    progress_bar: true
+    verbose: false
+    batch_mode: false
