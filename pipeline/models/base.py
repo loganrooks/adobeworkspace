@@ -47,6 +47,12 @@ class DocumentMetadata:
 class TableOfContents:
     """Table of contents structure."""
     entries: List[Dict[str, Any]] = field(default_factory=list)
+    
+    def get(self, key: str, default: Any = None) -> Any:
+        """Dictionary-style access to entries."""
+        if hasattr(self, key):
+            return getattr(self, key)
+        return default
 
 @dataclass
 class DocumentStructure:

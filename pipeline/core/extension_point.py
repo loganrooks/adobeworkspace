@@ -4,15 +4,19 @@ Extension point interface for the document processing pipeline.
 This module defines the base interface for all pipeline extensions.
 """
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any, Dict, Generic, TypeVar
 
+T = TypeVar('T')  # Type of extension this point manages
 
-class PipelineExtensionPoint(ABC):
+class PipelineExtensionPoint(ABC, Generic[T]):
     """Base interface for pipeline extension points.
     
     Extension points are the core mechanism for extending the pipeline
     with new functionality. Each extension point represents a specific
     capability that can be plugged into the pipeline.
+    
+    Type Parameters:
+        T: The type of extension this point manages
     """
     
     def __init__(self):

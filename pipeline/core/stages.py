@@ -5,9 +5,11 @@ processing pipeline, handling stage transitions and validation.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
+from pipeline.core.chunking import ChunkManager, ContentPatternDetector
 from pipeline.core.extension_point import PipelineExtensionPoint
+from pipeline.core.registry import DomainProcessorRegistry, OutputHandlerRegistry
 from pipeline.models.base import DocumentModel
 
 

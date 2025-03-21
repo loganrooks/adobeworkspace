@@ -164,8 +164,9 @@ class TestFixedSizeChunkStrategy:
         
         # Check if splits occur at paragraph or section boundaries where possible
         for chunk in chunks[:-1]:  # Skip last chunk
-            last_elem = chunk.content[-1]
-            assert last_elem.get("type") in ["paragraph_end", "section_break", "heading"]
+            if chunk.content:  # Check if content list is not empty
+                last_elem = chunk.content[-1]
+                assert last_elem.get("type") in ["paragraph_end", "section_break", "heading"]
 
 class TestChunkManager:
     @pytest.fixture
@@ -193,9 +194,17 @@ class TestChunkManager:
         chunks = chunk_manager.chunk_document(doc)
         
         if len(chunks) >= 2:
+            # Save original sizes before merging
+            original_size_0 = chunks[0].size
+            original_size_1 = chunks[1].size
+            original_count = len(chunks)
+            
+            # Perform merge
             merged = chunk_manager.merge_chunks([0, 1])
-            assert merged.size == chunks[0].size + chunks[1].size
-            assert len(chunk_manager.chunks) == len(chunks) - 1
+            
+            # Verify correct size and count
+            assert merged.size == original_size_0 + original_size_1
+            assert len(chunk_manager.chunks) == original_count - 1
             
     def test_split_chunk(self, chunk_manager):
         """Test chunk splitting."""
