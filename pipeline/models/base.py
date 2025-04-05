@@ -10,6 +10,7 @@ from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Union
 from uuid import uuid4
+import copy
 
 class SupportedFormats(Enum):
     """Supported input document formats."""
@@ -97,6 +98,22 @@ class ContentElement(ABC):
     def element_type(self) -> str:
         """Get the type of content element."""
         pass
+
+    def get(self, key: str, default: Any = None) -> Any:
+        """Dictionary-like get method for ContentElement."""
+        return getattr(self, key, default)
+    
+    def copy(self) -> 'ContentElement':
+        """Create a shallow copy of this ContentElement."""
+        return copy.copy(self)
+        
+    def __getitem__(self, key: str) -> Any:
+        """Support dictionary-like access with brackets."""
+        return getattr(self, key)
+        
+    def __setitem__(self, key: str, value: Any) -> None:
+        """Support dictionary-like assignment with brackets."""
+        setattr(self, key, value)
 
 @dataclass
 class TextElement(ContentElement):

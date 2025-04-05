@@ -32,7 +32,9 @@ from adobe.pdfservices.operation.pdfjobs.params.extract_pdf.extract_pdf_params i
 from adobe.pdfservices.operation.config.client_config import ClientConfig
 
 class ExtractTextInfoFromPDF:
-    def __init__(self, input_path):
+    def __init__(self, input_path, output_dir="output/ExtractTextInfoFromPDF"):
+        self.input_path = input_path
+        self.output_dir = output_dir
         # Load credentials
         with open('adobe_credentials.json') as f:
             creds = json.load(f)
@@ -86,30 +88,35 @@ class ExtractTextInfoFromPDF:
             jsondata = jsonentry.read()
             data = json.loads(jsondata)
 
-            for element in data["elements"]:
-                if element["Path"].endswith("/H1"):
-                    print(element["Text"])
+            # Text processing will be handled by the conversion script
+            # for element in data["elements"]:
+            #     if element["Path"].endswith("/H1"):
+            #         print(element["Text"])
 
         except (ServiceApiException, ServiceUsageException, SdkException) as e:
             print(f"Error during PDF extraction: {str(e)}")
             raise
 
     def create_output_file_path(self):
-        now = datetime.now()
-        time_stamp = now.strftime("%Y-%m-%dT%H-%M-%S")
-        os.makedirs("output/ExtractTextInfoFromPDF", exist_ok=True)
-        return f"output/ExtractTextInfoFromPDF/extract{time_stamp}.zip"
+        # Use the base name of the input PDF for the zip file
+        input_filename = os.path.basename(self.input_path)
+        base_name, _ = os.path.splitext(input_filename)
+        output_filename = f"{base_name}.zip"
+        os.makedirs(self.output_dir, exist_ok=True)
+        return os.path.join(self.output_dir, output_filename)
     
 
 def main():
-    parser = argparse.ArgumentParser(description='Extract text and headers from PDF')
+    parser = argparse.ArgumentParser(description='Extract text and headers from PDF using Adobe API')
     parser.add_argument('input_pdf', help='Path to input PDF file')
+    parser.add_argument('--output_dir', '-o', default='output/ExtractTextInfoFromPDF', help='Directory to save the output ZIP file')
     args = parser.parse_args()
 
     if not os.path.exists(args.input_pdf):
         raise FileNotFoundError(f"Input PDF not found: {args.input_pdf}")
 
-    ExtractTextInfoFromPDF(args.input_pdf)
+    # Pass output_dir to the class
+    ExtractTextInfoFromPDF(args.input_pdf, args.output_dir)
 
 if __name__ == '__main__':
     main()

@@ -58,6 +58,16 @@ class BaseRegistry(PipelineExtensionPoint[T], Generic[T]):
             if hasattr(extension, 'configure') and name in config:
                 extension.configure(config[name])
 
+    @property
+    def name(self) -> str:
+        """Return the name of the extension point."""
+        return self.__class__.__name__
+        
+    @property
+    def description(self) -> str:
+        """Return the description of the extension point."""
+        return f"{self.__class__.__name__} extension point"
+
 
 class ProcessorRegistry(BaseRegistry[Any]):
     """Registry for document processors.
